@@ -6,9 +6,6 @@ import com.gsoft.nimblechalenge.data.model.RefreshTokenRequestBody
 import com.gsoft.nimblechalenge.data.model.TokenRequestBody
 import com.gsoft.nimblechalenge.data.model.TokenResponse
 import com.gsoft.nimblechalenge.data.repository.AuthRepository
-import com.gsoft.nimblechalenge.util.Constants.CLIENT_ID
-import com.gsoft.nimblechalenge.util.Constants.CLIENT_SECRET
-import com.gsoft.nimblechalenge.util.Constants.GRANT_TYPE_PASSWORD
 import com.gsoft.nimblechalenge.util.Constants.KEY_EMAIL
 import com.gsoft.nimblechalenge.util.Constants.KEY_REFRESH_TOKEN
 import com.gsoft.nimblechalenge.util.Constants.KEY_TOKEN
@@ -23,13 +20,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String) : TokenResponse? {
         return try {
-            val tokenBody = TokenRequestBody(
-                grant_type = GRANT_TYPE_PASSWORD,
-                email = email,
-                password = password,
-                client_id = CLIENT_ID,
-                client_secret = CLIENT_SECRET
-            )
+            val tokenBody = TokenRequestBody(email = email, password = password)
             val response = authApi.login(tokenBody)
             if (response.isSuccessful) {
                 val token = response.body()?.data?.attributes?.access_token

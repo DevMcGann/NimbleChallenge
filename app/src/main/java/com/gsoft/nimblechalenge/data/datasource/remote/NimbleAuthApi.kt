@@ -9,18 +9,16 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface NimbleAuthApi {
+    @POST("oauth/token")
+    suspend fun login(@Body request: TokenRequestBody): Response<TokenResponse>
 
 
-    @POST("auth/token")
-    fun login(@Body request: TokenRequestBody): Response<TokenResponse>
+    @POST("oauth/token")
+    suspend fun refreshToken(@Body requestBody: RefreshTokenRequestBody): Response<TokenResponse>
 
 
-    @POST("auth/token")
-    fun refreshToken(@Body requestBody: RefreshTokenRequestBody): Response<TokenResponse>
-
-
-    @POST("auth/revoke")
-    fun logout(@Body requestBody: LogoutRequestBody): Response<Unit>
+    @POST("oauth/revoke")
+    suspend fun logout(@Body requestBody: LogoutRequestBody): Response<Unit>
 
 
 
