@@ -5,7 +5,7 @@ import com.gsoft.nimblechalenge.data.model.TokenResponse
 
 interface AuthRepository  {
     suspend fun login(email: String, password: String) : TokenResponse?
-    suspend fun refreshToken(token: String)
+    suspend fun refreshToken() : Boolean
     suspend fun isLoggedIn(): Boolean
     suspend fun logout()
     suspend fun createUser(email: String, password: String) : Boolean

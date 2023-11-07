@@ -25,7 +25,14 @@ class LoginViewModel @Inject constructor(
                 if(tokenResponse?.data?.attributes?.access_token != null){
                     _state.value = _state.value.copy(loginData = tokenResponse)
                     _state.value = _state.value.copy(isLoading = false)
+                    _state.value = _state.value.copy(isError = false)
                     _state.value = _state.value.copy(isAuth = true)
+                }else{
+                    if (tokenResponse?.data == null && tokenResponse?.error != null){
+                        _state.value = _state.value.copy(isLoading = false)
+                        _state.value = _state.value.copy(isError = true)
+                        _state.value = _state.value.copy(message = tokenResponse.error)
+                    }
                 }
 
             } catch (e: Exception) {

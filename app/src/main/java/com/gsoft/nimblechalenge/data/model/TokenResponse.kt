@@ -3,7 +3,8 @@ package com.gsoft.nimblechalenge.data.model
 import com.gsoft.nimblechalenge.util.Constants
 
 data class TokenResponse(
-    val data: TokenData
+    val data: TokenData? = null,
+    val error: String? = null
 )
 
 data class TokenData(

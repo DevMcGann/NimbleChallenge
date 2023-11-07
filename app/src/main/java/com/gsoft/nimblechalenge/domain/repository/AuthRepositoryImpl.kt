@@ -6,6 +6,7 @@ import com.gsoft.nimblechalenge.data.model.RefreshTokenRequestBody
 import com.gsoft.nimblechalenge.data.model.TokenRequestBody
 import com.gsoft.nimblechalenge.data.model.TokenResponse
 import com.gsoft.nimblechalenge.data.repository.AuthRepository
+import com.gsoft.nimblechalenge.util.Constants
 import com.gsoft.nimblechalenge.util.Constants.KEY_EMAIL
 import com.gsoft.nimblechalenge.util.Constants.KEY_REFRESH_TOKEN
 import com.gsoft.nimblechalenge.util.Constants.KEY_TOKEN
@@ -28,20 +29,41 @@ class AuthRepositoryImpl @Inject constructor(
                 sharePreferencesManager.setString(KEY_REFRESH_TOKEN, response.body()?.data?.attributes?.refresh_token)
                 sharePreferencesManager.setString(KEY_EMAIL, email)
             }
-            response.body()
+
+            if(response.code() == 400) {
+                return TokenResponse(
+                    data = null,
+                    error = "Wrong Credentials!"
+                )
+            }else{
+                response.body()
+            }
+
         }catch (e: Exception){
             null
         }
     }
 
-    override suspend fun refreshToken(token: String) {
-        sharePreferencesManager.getString(KEY_REFRESH_TOKEN, null)
-            ?.let {
-                val tokenBody = RefreshTokenRequestBody(
-                    refresh_token = it
-                )
-                authApi.refreshToken(tokenBody)
+    override suspend fun refreshToken() : Boolean{
+        return try {
+            val refreshTokenBody = RefreshTokenRequestBody(
+                grant_type = Constants.GRANT_TYPE_REFRESH_TOKEN,
+                client_id = Constants.CLIENT_ID,
+                client_secret = Constants.CLIENT_SECRET,
+                refresh_token = sharePreferencesManager.getString(KEY_REFRESH_TOKEN, null)
+            )
+            val response = authApi.refreshToken(refreshTokenBody)
+            if(response.isSuccessful){
+                sharePreferencesManager.setString(KEY_TOKEN, response.body()?.data?.attributes?.access_token)
+                sharePreferencesManager.setString(KEY_REFRESH_TOKEN, response.body()?.data?.attributes?.refresh_token)
+                true
+            }else{
+                false
             }
+
+        }catch (e: Exception){
+            false
+        }
     }
 
     override suspend fun isLoggedIn(): Boolean {

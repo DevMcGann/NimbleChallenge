@@ -14,8 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gsoft.nimblechalenge.presentation.home.HomeScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
+import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
+import com.gsoft.nimblechalenge.presentation.splash.SplashViewModel
 import com.gsoft.nimblechalenge.ui.theme.NimbleChalengeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,19 +30,38 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberNavController()
+
             val loginViewModel = hiltViewModel<LoginViewModel>()
             val loginState = loginViewModel.state
+
+            val splashViewModel = hiltViewModel<SplashViewModel>()
+            val splashState = splashViewModel.state
 
             NimbleChalengeTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController = navController, startDestination = "login") {
+                    NavHost(navController = navController, startDestination = "splash") {
+
+                        composable("splash") {
+                            SplashScreen(
+                                state = splashState.value,
+                                navController = navController
+                            )
+                        }
+
                         composable("login") {
                             LoginScreen(
                                 state = loginState.value,
-                                login = loginViewModel::login
+                                login = loginViewModel::login,
+                                navController = navController
+                            )
+                        }
+
+                        composable("home") {
+                            HomeScreen(
+                                navController = navController
                             )
                         }
                     }
