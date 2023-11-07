@@ -129,6 +129,12 @@ fun LoginScreen(
             }
         }
     }
+
+    if (state.isAuth){
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+        }
+    }
 }
 
 @Preview(showBackground = true)

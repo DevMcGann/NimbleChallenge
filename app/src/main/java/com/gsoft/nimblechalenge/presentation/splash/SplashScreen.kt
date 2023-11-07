@@ -40,11 +40,15 @@ fun SplashScreen(
 
 
     if (state.goToLogin){
-        navController.navigate("login")
+        navController.navigate("login") {
+            popUpTo("login") { inclusive = true }
+        }
     }
 
     if(state.goToHome){
-        navController.navigate("home")
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+        }
     }
 }
 

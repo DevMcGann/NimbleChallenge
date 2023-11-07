@@ -2,6 +2,8 @@ package com.gsoft.nimblechalenge
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -26,9 +28,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
 
+        super.onCreate(savedInstanceState)
+
+
+        setContent {
             val navController = rememberNavController()
 
             val loginViewModel = hiltViewModel<LoginViewModel>()
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
                                 state = splashState.value,
                                 navController = navController
                             )
+                            BackHandler(false){}
                         }
 
                         composable("login") {
@@ -57,12 +62,14 @@ class MainActivity : ComponentActivity() {
                                 login = loginViewModel::login,
                                 navController = navController
                             )
+                            BackHandler(false){}
                         }
 
                         composable("home") {
                             HomeScreen(
                                 navController = navController
                             )
+                            BackHandler(false){}
                         }
                     }
                 }

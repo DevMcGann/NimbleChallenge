@@ -30,6 +30,7 @@ class LoginViewModel @Inject constructor(
                 }else{
                     if (tokenResponse?.data == null && tokenResponse?.error != null){
                         _state.value = _state.value.copy(isLoading = false)
+                        _state.value = _state.value.copy(isAuth = false)
                         _state.value = _state.value.copy(isError = true)
                         _state.value = _state.value.copy(message = tokenResponse.error)
                     }
@@ -38,6 +39,7 @@ class LoginViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isError = true)
                 _state.value = _state.value.copy(isLoading = false)
+                _state.value = _state.value.copy(isAuth = false)
                 _state.value = _state.value.copy(message = e.message.toString())
             }
         }
