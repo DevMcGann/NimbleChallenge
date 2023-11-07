@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gsoft.nimblechalenge.presentation.home.HomeScreen
+import com.gsoft.nimblechalenge.presentation.home.HomeScreenState
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
 import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
@@ -66,7 +67,8 @@ class MainActivity : ComponentActivity() {
 
                         composable("home") {
                             HomeScreen(
-                                navController = navController
+                                navController = navController,
+                                state = HomeScreenState()
                             )
                             BackHandler(false){}
                         }
