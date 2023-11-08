@@ -2,6 +2,7 @@ package com.gsoft.nimblechalenge.data.datasource.remote
 
 import android.util.Log
 import com.gsoft.nimblechalenge.util.Constants.KEY_SHARED_PREFERENCE
+import com.gsoft.nimblechalenge.util.Constants.KEY_TOKEN
 import com.gsoft.nimblechalenge.util.SharePreferencesManager
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -16,9 +17,7 @@ class TokenInterceptor @Inject constructor(
     private lateinit var response : Response
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        token = prefs.getString(KEY_SHARED_PREFERENCE, "")!!
-        Log.d("TOKEN", token)
-
+        token = prefs.getString(KEY_TOKEN, null)!!
         var request = chain.request()
 
         if(request.header("Authorization") == null && token.isNotEmpty()){

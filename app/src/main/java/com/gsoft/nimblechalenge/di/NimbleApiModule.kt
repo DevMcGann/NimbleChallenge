@@ -40,7 +40,7 @@ class NimbleApiModule {
     @Singleton
     @Named("api")
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS)
     }
 
 

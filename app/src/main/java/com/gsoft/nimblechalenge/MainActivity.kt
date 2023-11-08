@@ -2,7 +2,6 @@ package com.gsoft.nimblechalenge
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gsoft.nimblechalenge.presentation.home.HomeScreen
+import com.gsoft.nimblechalenge.presentation.home.HomeViewModel
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
 import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
@@ -40,6 +40,9 @@ class MainActivity : ComponentActivity() {
 
             val splashViewModel = hiltViewModel<SplashViewModel>()
             val splashState = splashViewModel.state
+
+            val homeViewModel = hiltViewModel<HomeViewModel>()
+            val homeState = homeViewModel.state
 
             NimbleChalengeTheme {
                 Surface(
@@ -67,7 +70,10 @@ class MainActivity : ComponentActivity() {
 
                         composable("home") {
                             HomeScreen(
-                                navController = navController
+                                navController = navController,
+                                state = homeState.value,
+                                getSurvey = homeViewModel::getSurvey,
+                                getDate = homeViewModel::getCurrentDateFormattedString
                             )
                             BackHandler(false){}
                         }

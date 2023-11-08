@@ -35,8 +35,8 @@ fun LoginScreen(
      login: (email: String, password: String) -> Unit,
      navController: NavController
 ) {
-    val username = remember { mutableStateOf("dev.mcgann@gmail.com") }
-    val password = remember { mutableStateOf("123456") }
+    val username = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
 
     FullScreenBackground(
         backgroundImage = painterResource(id = R.drawable.overlay)
