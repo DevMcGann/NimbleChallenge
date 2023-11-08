@@ -102,13 +102,6 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-
-                        /*composable("surveyDetail/{title}/{subtitle}/{image}") { backStackEntry ->
-                            val title = backStackEntry.arguments?.getString("title") ?: "Survey Title"
-                            val subtitle = backStackEntry.arguments?.getString("subtitle") ?: "Survey Subtitle"
-                            val image = backStackEntry.arguments?.getString("image") ?: ""
-                            SurveyDetailScreen(title, subtitle, image, navController)
-                        }*/
                     }
                 }
             }
