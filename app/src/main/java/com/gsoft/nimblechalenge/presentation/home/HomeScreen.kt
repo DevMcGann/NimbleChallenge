@@ -1,209 +1,134 @@
 package com.gsoft.nimblechalenge.presentation.home
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.rounded.ArrowForward
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.gsoft.nimblechalenge.R
-import com.gsoft.nimblechalenge.ui.sharedComposables.FullScreenBackground
-import com.gsoft.nimblechalenge.ui.sharedComposables.NavCircle
-import com.gsoft.nimblechalenge.ui.theme.customFontFamily
+import com.gsoft.nimblechalenge.presentation.home.composables.DateAndAvatar
+import com.gsoft.nimblechalenge.presentation.home.composables.TitleAndSubtitle
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    state : HomeScreenState
-){
-    FullScreenBackground(
-        backgroundImage = painterResource(id = R.drawable.bgimage)
+    navController: NavController, //if someday implement the survey... Will need this.
+    state : HomeScreenState,
+    getSurvey : () -> Unit,
+    getDate : () -> String
+) {
+
+    LaunchedEffect(key1 = null) {
+        getSurvey()
+    }
+
+    val currentSlide = remember { mutableStateOf(0) }
+
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f
     ) {
-        ConstraintLayout(
+        state.surveyData?.data?.size ?: 0
+    }
+
+    val scope = rememberCoroutineScope()
+
+
+    if(state.isLoading){
+        AnimatedShimmer()
+    }else{
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 10.dp, vertical = 40.dp),
+                .background(Color.Black)
         ) {
-            val (date, surveyData) = createRefs()
+            HorizontalPager(
+                modifier = Modifier,
+                state = pagerState,
+                pageSpacing = 0.dp,
+                userScrollEnabled = true,
+                reverseLayout = false,
+                contentPadding = PaddingValues(0.dp),
+                beyondBoundsPageCount = 0,
+                pageSize = PageSize.Fill,
+                flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
+                key = { index -> state.surveyData?.data?.get(index)?.id ?: 0 },
+                pageNestedScrollConnection = PagerDefaults.pageNestedScrollConnection(
+                    Orientation.Horizontal
+                ),
+                pageContent = { index ->
 
-            Box(
-                modifier = Modifier.constrainAs(date){
-                top.linkTo(parent.top)
-                start.linkTo(parent.start, margin = 12.dp)
-                end.linkTo(parent.end, margin = 12.dp)
-                }
-            ){
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    //date
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
                     ){
-                        Text(
-                            text = "TUESDAY, NOVEMBER 7",
-                            color = Color.White,
-                            fontFamily = customFontFamily,
-                            fontSize = 13.sp
+                        AsyncImage(
+                            model = state.surveyData?.data?.get(index)?.attributes?.cover_image_url,
+                            contentDescription = "cover image",
+                            placeholder = painterResource(id = R.drawable.bgimage),
+                            error = painterResource(id = R.drawable.bgimage),
+                            fallback = painterResource(id = R.drawable.bgimage),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(0.4f)
                         )
-                    }
 
-                    //Today and Avatar
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text(
-                                text = "TODAY",
-                                color = Color.White,
-                                fontFamily = customFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 34.sp
-                            )
-                        }
-
-                        Column() {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription ="Avatar",
-                                tint = Color.White,
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
-                    }
-
-
-                }
-
-            }
-
-            Box(
-                modifier = Modifier.constrainAs(surveyData){
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start, margin = 12.dp)
-                    end.linkTo(parent.end, margin = 12.dp)
-                }
-            ){
-                Column() {
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ){
-                        repeat(3){
-                            NavCircle()
-                            Spacer(modifier = Modifier.width(8.dp))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        //title & Subtitle
                         Column(
-                            modifier = Modifier.fillMaxWidth(fraction = .65f),
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
+                            modifier = Modifier.fillMaxSize()
+                                .padding(horizontal = 20.dp, vertical = 50.dp),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            //title
-                            Text(
-                                text = "Career training and development",
-                                color = Color.White,
-                                fontFamily = customFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 28.sp,
-                                lineHeight = 34.sp,
-                                letterSpacing = (-.5).sp
+                            DateAndAvatar(date = getDate())
+                            TitleAndSubtitle(
+                                title = state.surveyData?.data?.get(index)?.attributes?.title?:"",
+                                subtitle = state.surveyData?.data?.get(index)?.attributes?.description?:"",
+                                index = index,
+                                size = state.surveyData?.data?.size ?: 0
                             )
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            //subtitle
-                            Text(
-                                text = "We would like to know what are your goals and skills you wanted...",
-                                color = Color.White,
-                                fontFamily = customFontFamily,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 17.sp,
-                                lineHeight = 22.sp,
-                                letterSpacing = (-.4).sp
-                            )
-                        }
-
-                        //button
-                        Column(
-                            modifier = Modifier.fillMaxWidth(fraction = .35f),
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            IconButton(onClick = {  }) {
-                                Box (
-                                    modifier = Modifier
-                                        .size(60.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.White),
-                                    contentAlignment = Alignment.Center
-                                ){
-                                    Icon(
-                                        imageVector = Icons.Filled.ArrowForward,
-                                        contentDescription = "see survey",
-                                        tint = Color.Black,
-                                        modifier = Modifier.size(50.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-            }
-
+                        }//column
+                    }//box
+                }//pageContent
+            )
         }
     }
+
 }
-
-
 
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview(){
+fun PreviewFeedScreen() {
     HomeScreen(
         navController = rememberNavController(),
-        state = HomeScreenState()
+        state = HomeScreenState(),
+        getSurvey = {},
+        getDate = {"Tuesday, November 7"}
     )
 }

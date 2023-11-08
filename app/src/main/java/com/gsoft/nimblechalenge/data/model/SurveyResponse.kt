@@ -1,8 +1,8 @@
 package com.gsoft.nimblechalenge.data.model
 
 data class SurveyResponse(
-    val data: List<SurveyItem>,
-    val meta: Meta
+    val data: List<SurveyItem>? = null,
+    val meta: Meta? = null
 )
 
 data class SurveyItem(
