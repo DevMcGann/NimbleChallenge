@@ -46,7 +46,6 @@ fun HomeScreen(
         getSurvey()
     }
 
-    val currentSlide = remember { mutableStateOf(0) }
 
     val pagerState = rememberPagerState(
         initialPage = 0,
