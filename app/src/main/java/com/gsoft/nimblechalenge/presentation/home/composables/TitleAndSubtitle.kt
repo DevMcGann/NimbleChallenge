@@ -31,7 +31,7 @@ fun TitleAndSubtitle(
     title : String = "Title",
     subtitle : String = "Subtitle",
     index : Int = 0,
-    size : Int = 0
+    size : Int = 0,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

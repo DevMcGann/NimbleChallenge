@@ -12,9 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.gsoft.nimblechalenge.presentation.detail.SurveyDetailScreen
 import com.gsoft.nimblechalenge.presentation.home.HomeScreen
 import com.gsoft.nimblechalenge.presentation.home.HomeViewModel
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
@@ -76,6 +79,28 @@ class MainActivity : ComponentActivity() {
                                 getDate = homeViewModel::getCurrentDateFormattedString
                             )
                             BackHandler(false){}
+                        }
+
+                        composable(
+                            route = "Details?title={title}&subtitle={subtitle}&image={image}",
+                            arguments = listOf(
+                                navArgument(name = "title"){
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = "subtitle"){
+                                    type = NavType.StringType
+                                },
+                                navArgument(name = "image"){
+                                    type = NavType.StringType
+                                }
+                            )
+                        ){ backstackEntry ->
+                            SurveyDetailScreen(
+                                title = backstackEntry.arguments?.getString("title") ?: "Survey Title",
+                                subtitle = backstackEntry.arguments?.getString("subtitle") ?: "Survey Subtitle",
+                                image = backstackEntry.arguments?.getString("image") ?: "",
+                                navController = navController
+                            )
                         }
                     }
                 }

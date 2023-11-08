@@ -2,6 +2,7 @@ package com.gsoft.nimblechalenge.presentation.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +47,6 @@ fun HomeScreen(
         getSurvey()
     }
 
-    val currentSlide = remember { mutableStateOf(0) }
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -101,7 +101,8 @@ fun HomeScreen(
 
                         Column(
                             modifier = Modifier.fillMaxSize()
-                                .padding(horizontal = 20.dp, vertical = 50.dp),
+                                .padding(horizontal = 20.dp, vertical = 50.dp)
+                                .clickable { navController.navigate("Details?title=${state.surveyData?.data?.get(index)?.attributes?.title?:""}&subtitle=${state.surveyData?.data?.get(index)?.attributes?.description?:""}&image=${state.surveyData?.data?.get(index)?.attributes?.cover_image_url?:"" } ") },
                             verticalArrangement = Arrangement.SpaceBetween,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
