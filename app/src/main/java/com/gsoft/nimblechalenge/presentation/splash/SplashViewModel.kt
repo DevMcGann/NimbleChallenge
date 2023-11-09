@@ -25,7 +25,7 @@ class SplashViewModel @Inject constructor(
     }
 
 
-    private fun refreshToken(){
+     fun refreshToken(){
         viewModelScope.launch {
             delay(1000) //just a hair of delay
             _state.value = _state.value.copy(isLoading = true)
