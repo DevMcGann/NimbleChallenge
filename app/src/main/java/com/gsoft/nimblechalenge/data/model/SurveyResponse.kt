@@ -12,6 +12,7 @@ data class SurveyItem(
 )
 
 data class SurveyAttributes(
+    val id: String,
     val title: String,
     val description: String,
     val thank_email_above_threshold: String?,

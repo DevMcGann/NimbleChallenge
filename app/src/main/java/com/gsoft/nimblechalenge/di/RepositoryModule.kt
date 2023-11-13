@@ -1,12 +1,15 @@
 package com.gsoft.nimblechalenge.di
 
 
+import android.app.Application
+import com.gsoft.nimblechalenge.data.datasource.local.dao.SurveyDao
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleApi
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleAuthApi
 import com.gsoft.nimblechalenge.data.repository.AuthRepository
 import com.gsoft.nimblechalenge.data.repository.SurveyRepository
 import com.gsoft.nimblechalenge.domain.repository.AuthRepositoryImpl
 import com.gsoft.nimblechalenge.domain.repository.SurveyRepositoryImpl
+import com.gsoft.nimblechalenge.util.NetworkUtils
 import com.gsoft.nimblechalenge.util.SharePreferencesManager
 import dagger.Module
 import dagger.Provides
@@ -23,10 +26,14 @@ class RepositoryModule {
     @Singleton
     @Named("api")
     fun provideApiRepository(
-        @Named("api")api: NimbleApi
+        @Named("api")api: NimbleApi,
+        dao: SurveyDao,
+        networkUtils: NetworkUtils
     ): SurveyRepository {
         return SurveyRepositoryImpl(
             api = api,
+            dao = dao,
+            networkUtils = networkUtils
         )
     }
 
@@ -42,6 +49,12 @@ class RepositoryModule {
             authApi = api,
             sharePreferencesManager = sharedPreference
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkUtils(application: Application): NetworkUtils {
+        return NetworkUtils(application)
     }
 
 
