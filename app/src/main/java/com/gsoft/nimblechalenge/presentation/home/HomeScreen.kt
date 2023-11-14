@@ -40,11 +40,13 @@ fun HomeScreen(
     navController: NavController, //if someday implement the survey... Will need this.
     state : HomeScreenState,
     getSurvey : () -> Unit,
+    getAllSurveys : (page:Int) -> Unit,
     getDate : () -> String
 ) {
 
     LaunchedEffect(key1 = null) {
-        getSurvey()
+       // getSurvey()
+        getAllSurveys(state.page)
     }
 
 
@@ -52,11 +54,8 @@ fun HomeScreen(
         initialPage = 0,
         initialPageOffsetFraction = 0f
     ) {
-        state.surveyData?.data?.size ?: 0
+        state.surveys?.size ?: 0
     }
-
-    val scope = rememberCoroutineScope()
-
 
     if(state.isLoading){
         AnimatedShimmer()
@@ -76,7 +75,7 @@ fun HomeScreen(
                 beyondBoundsPageCount = 0,
                 pageSize = PageSize.Fill,
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
-                key = { index -> state.surveyData?.data?.get(index)?.id ?: 0 },
+                key = { index -> state.surveys?.get(index)?.id ?: 0 },
                 pageNestedScrollConnection = PagerDefaults.pageNestedScrollConnection(
                     Orientation.Horizontal
                 ),
@@ -88,7 +87,7 @@ fun HomeScreen(
                             .background(Color.Black)
                     ){
                         AsyncImage(
-                            model = state.surveyData?.data?.get(index)?.attributes?.cover_image_url,
+                            model = state.surveys?.get(index)?.cover_image_url,
                             contentDescription = "cover image",
                             placeholder = painterResource(id = R.drawable.bgimage),
                             error = painterResource(id = R.drawable.bgimage),
@@ -108,10 +107,10 @@ fun HomeScreen(
                         ) {
                             DateAndAvatar(date = getDate())
                             TitleAndSubtitle(
-                                title = state.surveyData?.data?.get(index)?.attributes?.title?:"",
-                                subtitle = state.surveyData?.data?.get(index)?.attributes?.description?:"",
+                                title = state.surveys?.get(index)?.title?:"",
+                                subtitle = state.surveys?.get(index)?.description?:"",
                                 index = index,
-                                size = state.surveyData?.data?.size ?: 0
+                                size = state.surveys?.size ?: 0
                             )
                         }//column
                     }//box
@@ -130,6 +129,7 @@ fun PreviewFeedScreen() {
         navController = rememberNavController(),
         state = HomeScreenState(),
         getSurvey = {},
+        getAllSurveys = {},
         getDate = {"Tuesday, November 7"}
     )
 }

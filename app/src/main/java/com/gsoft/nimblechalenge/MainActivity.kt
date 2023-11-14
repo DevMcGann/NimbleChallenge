@@ -76,6 +76,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 state = homeState.value,
                                 getSurvey = homeViewModel::getSurvey,
+                                getAllSurveys= homeViewModel::getAllSurveys,
                                 getDate = homeViewModel::getCurrentDateFormattedString
                             )
                             BackHandler(false){}

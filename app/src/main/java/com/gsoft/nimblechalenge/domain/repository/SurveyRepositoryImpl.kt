@@ -1,9 +1,11 @@
 package com.gsoft.nimblechalenge.domain.repository
 
-import com.gsoft.epicchallenge.util.LocalOrRemoteDataAccess
+import com.gsoft.nimblechalenge.util.LocalOrRemoteDataAccess
 import com.gsoft.nimblechalenge.data.DataMapper
 import com.gsoft.nimblechalenge.data.datasource.local.dao.SurveyDao
+import com.gsoft.nimblechalenge.data.datasource.local.entity.SurveyAttributesDB
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleApi
+import com.gsoft.nimblechalenge.data.model.SurveyAttributes
 import com.gsoft.nimblechalenge.data.model.SurveyResponse
 import com.gsoft.nimblechalenge.data.repository.SurveyRepository
 import com.gsoft.nimblechalenge.domain.model.SurveyDomain
@@ -34,13 +36,35 @@ class SurveyRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun getSurveys() :  MyResource<SurveyDomain?> {
+    override suspend fun getSurveys( page : Int) :  MyResource<List<SurveyDomain>?> {
        return  LocalOrRemoteDataAccess(
             fetchFromLocal = { dao.getSurveys()?.map{ DataMapper.DbtoDomain(it) } },
             fetchFromRemote = { api.getSurvey() },
-            saveRemoteData = { it.data?.map { DataMapper.ApiToDb(it.attributes) } },
-            shouldFetchFromRemote = { networkUtils.isNetworkConnected() }
+            saveRemoteData = { surveyResponse ->
+                surveyResponse.data?.map {
+                    val surveyAttributes = SurveyAttributes(
+                        id = it.attributes.id,
+                        title = it.attributes.title,
+                        description = it.attributes.description,
+                        thank_email_above_threshold = it.attributes.thank_email_above_threshold,
+                        thank_email_below_threshold = it.attributes.thank_email_below_threshold,
+                        is_active = it.attributes.is_active,
+                        cover_image_url = it.attributes.cover_image_url,
+                        created_at = it.attributes.created_at,
+                        active_at = it.attributes.active_at,
+                        inactive_at = it.attributes.inactive_at,
+                        survey_type = it.attributes.survey_type
+                    )
+                    //save
+                    saveSurvey(DataMapper.ApiToDb(surveyAttributes))
+                }
+                             },
+            shouldFetchFromRemote = true//networkUtils.isNetworkConnected()
         )
+    }
+
+    override fun saveSurvey(survey: SurveyAttributesDB) {
+        dao.insert(survey)
     }
 
 }

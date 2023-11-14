@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveyUseCase
+import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveys
 import com.gsoft.nimblechalenge.util.MyResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -16,13 +17,45 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getSurveyUseCase: GetSurveyUseCase
+    private val getSurveyUseCase: GetSurveyUseCase,
+    private val getSurveys: GetSurveys
 ): ViewModel() {
 
 
     private val _state = mutableStateOf(HomeScreenState())
     var state: State<HomeScreenState> = _state
 
+    fun getAllSurveys(page : Int) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            _state.value = _state.value.copy(isError = false)
+            _state.value = _state.value.copy( surveyData = null)
+            _state.value = _state.value.copy(errorMessage = "")
+
+            try{
+                when (val response = getSurveys.invoke(_state.value.page)) {
+                    is MyResource.Success -> {
+                        _state.value = _state.value.copy(surveys = response.data)
+                        _state.value = _state.value.copy(isLoading = false)
+                    }
+
+                    is MyResource.Failure -> {
+                        _state.value = _state.value.copy(isLoading = false)
+                        _state.value = _state.value.copy(isError = true)
+                        _state.value =
+                            _state.value.copy(errorMessage = response.exception.message.toString())
+                    }
+
+                    else -> {}
+                }
+
+            }catch (e: Exception){
+                _state.value = _state.value.copy(isError = true)
+                _state.value = _state.value.copy(isLoading = false)
+                _state.value = _state.value.copy(errorMessage = e.message.toString())
+            }
+        }
+    }
 
      fun getSurvey() {
         viewModelScope.launch {
