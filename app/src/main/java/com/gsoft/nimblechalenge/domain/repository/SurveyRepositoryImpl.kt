@@ -1,5 +1,6 @@
 package com.gsoft.nimblechalenge.domain.repository
 
+import com.gsoft.nimblechalenge.data.datasource.local.dao.SurveyDao
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleApi
 import com.gsoft.nimblechalenge.data.model.SurveyResponse
 import com.gsoft.nimblechalenge.data.repository.SurveyRepository
@@ -8,7 +9,8 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class SurveyRepositoryImpl @Inject constructor(
-    @Named("api") private val api: NimbleApi
+    @Named("api") private val api: NimbleApi,
+    surveyDao: SurveyDao
 ): SurveyRepository {
     override suspend fun getSurveyList(): MyResource<SurveyResponse?> {
         return try {
