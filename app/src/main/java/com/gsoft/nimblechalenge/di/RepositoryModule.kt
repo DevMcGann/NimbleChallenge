@@ -1,6 +1,7 @@
 package com.gsoft.nimblechalenge.di
 
 
+import com.gsoft.nimblechalenge.data.datasource.local.dao.SurveyDao
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleApi
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleAuthApi
 import com.gsoft.nimblechalenge.data.repository.AuthRepository
@@ -23,10 +24,12 @@ class RepositoryModule {
     @Singleton
     @Named("api")
     fun provideApiRepository(
-        @Named("api")api: NimbleApi
+        @Named("api")api: NimbleApi,
+        surveyDao: SurveyDao
     ): SurveyRepository {
         return SurveyRepositoryImpl(
             api = api,
+            surveyDao = surveyDao
         )
     }
 
