@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
             _state.value = _state.value.copy(errorMessage = "")
             delay(2000)
             try{
-                when (val response = getSurveys.invoke()){
+                when (val response = getSurveys.invoke(state.value.currentPage)){
                     is MyResource.Success -> {
                         _state.value = _state.value.copy(surveys = response.data)
                         _state.value = _state.value.copy(isLoading = false)
