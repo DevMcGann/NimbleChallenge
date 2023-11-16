@@ -1,6 +1,7 @@
 package com.gsoft.nimblechalenge.presentation.home.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.gsoft.nimblechalenge.ui.theme.customFontFamily
 
 @Composable
@@ -32,6 +35,8 @@ fun TitleAndSubtitle(
     subtitle : String = "Subtitle",
     index : Int = 0,
     size : Int = 0,
+    navController: NavController,
+    coverImage : String? = null
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -95,7 +100,8 @@ fun TitleAndSubtitle(
                         contentDescription = "see survey",
                         tint = Color.Black,
                         modifier = Modifier.size(50.dp)
-                    )
+                            .clickable { navController.navigate("Details?title=${title}&subtitle=${subtitle}&image=${coverImage} ") },
+                        )
                 }
             }
         }
@@ -105,5 +111,7 @@ fun TitleAndSubtitle(
 @Preview(showBackground = true, backgroundColor = 0xFFFFF)
 @Composable
 fun TitleAndSubtitlePreview() {
-    TitleAndSubtitle()
+    TitleAndSubtitle(
+        navController = rememberNavController(),
+    )
 }

@@ -101,8 +101,7 @@ fun HomeScreen(
 
                         Column(
                             modifier = Modifier.fillMaxSize()
-                                .padding(horizontal = 20.dp, vertical = 50.dp)
-                                .clickable { navController.navigate("Details?title=${state.surveys[index]?.title?:""}&subtitle=${state.surveys[index]?.description?:""}&image=${state.surveys[index]?.cover_image_url?:"" } ") },
+                                .padding(horizontal = 20.dp, vertical = 50.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -111,7 +110,9 @@ fun HomeScreen(
                                 title = state.surveys[index]?.title?:"",
                                 subtitle = state.surveys[index]?.description?:"",
                                 index = index,
-                                size = state.surveys.size
+                                size = state.surveys.size,
+                                navController = navController,
+                                coverImage = state.surveys[index]?.cover_image_url?:"",
                             )
                         }//column
                     }//box
