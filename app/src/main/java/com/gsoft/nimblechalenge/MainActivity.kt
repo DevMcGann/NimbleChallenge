@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 navController = navController,
                                 state = homeState.value,
-                                getSurvey = homeViewModel::getSurvey,
+                                getSurvey = homeViewModel::getSurveys,
                                 getDate = homeViewModel::getCurrentDateFormattedString
                             )
                             BackHandler(false){}
@@ -106,21 +106,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NimbleChalengeTheme {
-        Greeting("Android")
     }
 }

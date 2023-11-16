@@ -52,7 +52,7 @@ fun HomeScreen(
         initialPage = 0,
         initialPageOffsetFraction = 0f
     ) {
-        state.surveyData?.data?.size ?: 0
+        state.surveys.size
     }
 
     val scope = rememberCoroutineScope()
@@ -76,7 +76,7 @@ fun HomeScreen(
                 beyondBoundsPageCount = 0,
                 pageSize = PageSize.Fill,
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState),
-                key = { index -> state.surveyData?.data?.get(index)?.id ?: 0 },
+                key = { index -> state.surveys[index]?.id ?: 0 },
                 pageNestedScrollConnection = PagerDefaults.pageNestedScrollConnection(
                     Orientation.Horizontal
                 ),
@@ -88,7 +88,7 @@ fun HomeScreen(
                             .background(Color.Black)
                     ){
                         AsyncImage(
-                            model = state.surveyData?.data?.get(index)?.attributes?.cover_image_url,
+                            model = state.surveys[index]?.cover_image_url,
                             contentDescription = "cover image",
                             placeholder = painterResource(id = R.drawable.bgimage),
                             error = painterResource(id = R.drawable.bgimage),
@@ -102,16 +102,16 @@ fun HomeScreen(
                         Column(
                             modifier = Modifier.fillMaxSize()
                                 .padding(horizontal = 20.dp, vertical = 50.dp)
-                                .clickable { navController.navigate("Details?title=${state.surveyData?.data?.get(index)?.attributes?.title?:""}&subtitle=${state.surveyData?.data?.get(index)?.attributes?.description?:""}&image=${state.surveyData?.data?.get(index)?.attributes?.cover_image_url?:"" } ") },
+                                .clickable { navController.navigate("Details?title=${state.surveys[index]?.title?:""}&subtitle=${state.surveys[index]?.description?:""}&image=${state.surveys[index]?.cover_image_url?:"" } ") },
                             verticalArrangement = Arrangement.SpaceBetween,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             DateAndAvatar(date = getDate())
                             TitleAndSubtitle(
-                                title = state.surveyData?.data?.get(index)?.attributes?.title?:"",
-                                subtitle = state.surveyData?.data?.get(index)?.attributes?.description?:"",
+                                title = state.surveys[index]?.title?:"",
+                                subtitle = state.surveys[index]?.description?:"",
                                 index = index,
-                                size = state.surveyData?.data?.size ?: 0
+                                size = state.surveys.size
                             )
                         }//column
                     }//box

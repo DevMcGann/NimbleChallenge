@@ -4,9 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveyUseCase
+import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveys
 import com.gsoft.nimblechalenge.util.MyResource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getSurveyUseCase: GetSurveyUseCase
+    private val getSurveys: GetSurveys
 ): ViewModel() {
 
 
@@ -24,17 +25,18 @@ class HomeViewModel @Inject constructor(
     var state: State<HomeScreenState> = _state
 
 
-     fun getSurvey() {
-        viewModelScope.launch {
+
+    fun getSurveys(){
+        viewModelScope.launch(Dispatchers.IO) {
             _state.value = _state.value.copy(isLoading = true)
             _state.value = _state.value.copy(isError = false)
             _state.value = _state.value.copy( surveyData = null)
             _state.value = _state.value.copy(errorMessage = "")
-            delay(2000) //just for the sake of this challenge,  most of the times api is so fast that the shimmer screen cant be seen
+            delay(2000)
             try{
-                when (val response = getSurveyUseCase.invoke()){
+                when (val response = getSurveys.invoke()){
                     is MyResource.Success -> {
-                        _state.value = _state.value.copy(surveyData = response.data)
+                        _state.value = _state.value.copy(surveys = response.data)
                         _state.value = _state.value.copy(isLoading = false)
                     }
                     is MyResource.Failure -> {
@@ -49,7 +51,8 @@ class HomeViewModel @Inject constructor(
                             isLoading = false,
                             isError = false,
                             errorMessage = "",
-                            surveyData = null
+                            surveyData = null,
+                            surveys = emptyList()
                         )
                     }
                 }
@@ -59,7 +62,7 @@ class HomeViewModel @Inject constructor(
                 _state.value = _state.value.copy(isLoading = false)
                 _state.value = _state.value.copy(errorMessage = e.message.toString())
             }
-        }//corroutine
+        }
     }
 
 
