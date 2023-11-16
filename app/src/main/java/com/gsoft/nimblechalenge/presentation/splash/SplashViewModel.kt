@@ -4,6 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gsoft.nimblechalenge.domain.usecases.authUsecases.IsLoggedInUseCase
 import com.gsoft.nimblechalenge.domain.usecases.authUsecases.LogoutUseCase
 import com.gsoft.nimblechalenge.domain.usecases.authUsecases.RefreshTokenUseCase
 import com.gsoft.nimblechalenge.presentation.login.LoginScreenState
@@ -14,16 +16,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val refreshTokenUseCase: RefreshTokenUseCase
+    private val refreshTokenUseCase: RefreshTokenUseCase,
+    private val isLoggedInUseCase: IsLoggedInUseCase
 ) : ViewModel() {
 
     private val _state = mutableStateOf(SplashState())
     val state: State<SplashState> = _state
 
     init {
-        refreshToken()
+        isLogged()
     }
 
+     private fun isLogged(){
+         viewModelScope.launch {
+             val isLogged = isLoggedInUseCase.invoke()
+             if (isLogged){
+                 _state.value = _state.value.copy(goToHome = true)
+             }else{
+                 refreshToken()
+             }
+         }
+    }
 
      fun refreshToken(){
         viewModelScope.launch {

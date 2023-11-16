@@ -8,5 +8,7 @@ data class HomeScreenState(
     val isError: Boolean = false,
     val errorMessage: String = "",
     val surveyData : SurveyResponse? = null,
-    val surveys : List<Survey?> = emptyList()
+    val surveys : List<Survey?> = emptyList(),
+    val currentPage : Int = 1,
+    val isPullingToRefresh : Boolean = false
 )

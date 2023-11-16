@@ -9,7 +9,7 @@ import javax.inject.Named
 class GetSurveys @Inject constructor (
     @Named("api")private val apiRepository: SurveyRepository
 ) {
-    suspend operator fun invoke() : MyResource<List<Survey?>> {
-        return  apiRepository.getSurveys()
+    suspend operator fun invoke(page:Int) : MyResource<List<Survey?>> {
+        return  apiRepository.getSurveys(page)
     }
 }
