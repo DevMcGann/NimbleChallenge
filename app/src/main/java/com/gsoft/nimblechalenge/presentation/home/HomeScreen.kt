@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.gsoft.nimblechalenge.R
+import com.gsoft.nimblechalenge.presentation.error.ErrorScreen
 import com.gsoft.nimblechalenge.presentation.home.composables.DateAndAvatar
 import com.gsoft.nimblechalenge.presentation.home.composables.TitleAndSubtitle
 
@@ -61,6 +62,12 @@ fun HomeScreen(
     if(state.isLoading){
         AnimatedShimmer()
     }else{
+
+        if(state.isError){
+            ErrorScreen(navController = navController)
+            return
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -100,7 +107,8 @@ fun HomeScreen(
                         )
 
                         Column(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
                                 .padding(horizontal = 20.dp, vertical = 50.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
                             horizontalAlignment = Alignment.CenterHorizontally
