@@ -22,6 +22,7 @@ import com.gsoft.nimblechalenge.presentation.home.HomeScreen
 import com.gsoft.nimblechalenge.presentation.home.HomeViewModel
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
+import com.gsoft.nimblechalenge.presentation.noConnection.NoConnectionScreen
 import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
 import com.gsoft.nimblechalenge.presentation.splash.SplashViewModel
 import com.gsoft.nimblechalenge.ui.theme.NimbleChalengeTheme
@@ -59,6 +60,11 @@ class MainActivity : ComponentActivity() {
                                 state = splashState.value,
                                 navController = navController
                             )
+                            BackHandler(false){}
+                        }
+
+                        composable("noConnection") {
+                            NoConnectionScreen()
                             BackHandler(false){}
                         }
 
