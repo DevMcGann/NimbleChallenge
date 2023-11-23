@@ -8,5 +8,6 @@ data class SplashState(
     val isError : Boolean = false,
     val isAuth: Boolean = false,
     val goToLogin : Boolean = false,
-    val goToHome : Boolean = false
+    val goToHome : Boolean = false,
+    val goToNoConn : Boolean = false
 )
