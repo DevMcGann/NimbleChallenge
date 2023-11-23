@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -22,6 +23,7 @@ import com.gsoft.nimblechalenge.R
 fun FullScreenBackground(
     color : Color = Color.Black,
     backgroundImage: Painter? = null,
+    alpha : Float = 1.0f,
     content : @Composable () -> Unit
 
     ) {
@@ -37,6 +39,7 @@ fun FullScreenBackground(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
+                        .alpha(alpha)
                 )
         }
         content()
