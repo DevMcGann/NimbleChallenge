@@ -10,6 +10,7 @@ import com.gsoft.nimblechalenge.data.repository.SurveyRepository
 import com.gsoft.nimblechalenge.domain.model.Survey
 import com.gsoft.nimblechalenge.util.MyResource
 import com.gsoft.nimblechalenge.util.NetworkUtils
+import com.gsoft.nimblechalenge.util.Resource
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Named
@@ -24,7 +25,7 @@ class SurveyRepositoryImpl @Inject constructor(
         return surveyDao.getSurveys()
     }
 
-    override suspend fun getSurveys(page: Int): MyResource<List<Survey?>> {
+    override suspend fun getSurveys(page: Int): Resource<List<Survey?>> {
        return  try {
             if (networkUtils.isNetworkConnected()){
                 getSurveysFromApi(page)
@@ -32,11 +33,11 @@ class SurveyRepositoryImpl @Inject constructor(
                 getSurveysOffline()
             }
         } catch (e: Exception) {
-            MyResource.Failure(e)
+            Resource.error(message = e.message.toString(), data = null)
         }
     }
 
-    private suspend fun getSurveysFromApi(page:Int):MyResource<List<Survey?>>{
+    private suspend fun getSurveysFromApi(page:Int):Resource<List<Survey?>>{
         return  try {
             val response = api.getSurvey(page)
             if (response.isSuccessful) {
@@ -48,22 +49,22 @@ class SurveyRepositoryImpl @Inject constructor(
                     }
                 }
                 val surveys = DataMapper.DbToDomain(getSurveysFromDao())
-                MyResource.Success(surveys)
+                Resource.success(data = surveys)
             } else {
-                MyResource.Failure(Exception("Request failed with code ${response.code()}"))
+                Resource.error(message = "Request failed", data = null)
             }
 
         } catch (e: Exception) {
-            MyResource.Failure(e)
+            Resource.error(message = e.message.toString(), data = null)
         }
     }
 
-    private suspend fun getSurveysOffline(): MyResource<List<Survey?>> {
+    private suspend fun getSurveysOffline(): Resource<List<Survey?>> {
         return try {
             val surveys = getSurveysFromDao()
-            MyResource.Success(DataMapper.DbToDomain(surveys))
+            Resource.success(DataMapper.DbToDomain(surveys))
         } catch (e: Exception) {
-            MyResource.Failure(e)
+            Resource.error(message = e.message.toString(), data = null)
         }
     }
 

@@ -27,12 +27,13 @@ class SplashViewModel @Inject constructor(
         isLogged()
     }
 
-     private fun isLogged(){
+      fun isLogged(){
          viewModelScope.launch {
              val isLogged = isLoggedInUseCase.invoke()
              if (isLogged){
                  _state.value = _state.value.copy(goToHome = true)
              }else{
+                 _state.value = _state.value.copy(goToHome = false)
                  refreshToken()
              }
          }

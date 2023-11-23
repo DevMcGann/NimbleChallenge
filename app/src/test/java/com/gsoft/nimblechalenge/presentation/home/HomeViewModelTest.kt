@@ -1,38 +1,41 @@
 package com.gsoft.nimblechalenge.presentation.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.viewModelScope
 import com.gsoft.nimblechalenge.MainCoroutineRule
-import com.gsoft.nimblechalenge.data.model.SurveyAttributes
-import com.gsoft.nimblechalenge.data.model.SurveyItem
-import com.gsoft.nimblechalenge.data.model.SurveyResponse
-import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveyUseCase
-import com.gsoft.nimblechalenge.util.MyResource
+import com.gsoft.nimblechalenge.data.repository.SurveyRepository
+import com.gsoft.nimblechalenge.domain.model.Survey
+import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveys
+import com.gsoft.nimblechalenge.util.Resource
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyAll
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 
+
 @ExperimentalCoroutinesApi
 class HomeViewModelTest {
 
-    @RelaxedMockK
-    private lateinit var useCase: GetSurveyUseCase
 
-
-    private lateinit var viewModel: HomeViewModel
+    private lateinit var  useCase : GetSurveys
+    private lateinit var vm : HomeViewModel
+    private val repo : SurveyRepository = mockk(relaxed = true)
 
     @get:Rule
     var rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
@@ -41,53 +44,80 @@ class HomeViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
+
+    private val dispatcher = StandardTestDispatcher()
+
+    val survey = Survey(
+        id = "2",
+        title = "title",
+        description = "description",
+        cover_image_url = "image",
+        survey_type = "survey",
+        is_active = true,
+        active_at = "active",
+        created_at = "created",
+        inactive_at = "inactive",
+        thank_email_above_threshold = "above",
+        thank_email_below_threshold = "below"
+    )
+
+    val myList : List<Survey?> = listOf(survey)
+
+    val surveySuccess = Resource.success(data = myList, null)
+
+
     @Before
-    fun onBefore() {
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
         MockKAnnotations.init(this)
-        viewModel = HomeViewModel(useCase)
-        Dispatchers.setMain(Dispatchers.Unconfined)
+        useCase = GetSurveys(repo)
+        vm = HomeViewModel(useCase)
+        
     }
 
     @After
-    fun onAfter() {
+    fun close() {
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `get surveys success`() = runTest {
+    fun `get survey success`() = runTest {
         //Given
-        //
-        val surveyItem = SurveyItem(id = "id", type = "type", attributes = SurveyAttributes(title = "title", description = "description", cover_image_url = "image", survey_type = "survey", is_active = true, active_at = "active", created_at = "created", inactive_at = "inactive", thank_email_above_threshold = "above", thank_email_below_threshold = "below"))
-        val surveyResponse = SurveyResponse(data = listOf(surveyItem), meta = null)
-        val result = MyResource.Success(surveyResponse)
+        coEvery { useCase.invoke(vm.state.value.currentPage) } returns surveySuccess
 
-        coEvery { useCase.invoke() } returns result
+        // When
+        vm.getSurveys()
 
-        //When
-        viewModel.getSurvey()
+        // Then
+        dispatcher.scheduler.advanceUntilIdle()
 
-        //Then
-        advanceUntilIdle()
-        assert(viewModel.state.value.surveyData == result.data)
+        coVerifyAll {
+            useCase.invoke(any())
+            vm.getSurveys()
+        }
+
+        assertEquals(myList, vm.state.value.surveys)
+
     }
-
 
     @Test
-    fun `get Surveys error`() = runTest {
-        val response  = Exception("some")
-        val result = MyResource.Failure(response)
+    fun `get survey error`() = runTest {
+        //Given
+        coEvery { useCase.invoke(vm.state.value.currentPage) } returns Resource.error(message = "error", data = null)
 
-        coEvery { useCase.invoke() } returns result
+        // When
+        vm.getSurveys()
 
-        //When
-        viewModel.getSurvey()
+        // Then
+        dispatcher.scheduler.advanceUntilIdle()
 
-        //Then
-        advanceUntilIdle()
-        assert(viewModel.state.value.isError)
+        coVerifyAll {
+            useCase.invoke(any())
+            vm.getSurveys()
+        }
+
+        assertEquals(true, vm.state.value.isError)
     }
-
-
 
 
 }
