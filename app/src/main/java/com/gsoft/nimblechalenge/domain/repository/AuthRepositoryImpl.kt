@@ -3,8 +3,12 @@ package com.gsoft.nimblechalenge.domain.repository
 import com.gsoft.nimblechalenge.data.datasource.remote.NimbleAuthApi
 import com.gsoft.nimblechalenge.data.model.LogoutRequestBody
 import com.gsoft.nimblechalenge.data.model.RefreshTokenRequestBody
+import com.gsoft.nimblechalenge.data.model.ResetMeta
+import com.gsoft.nimblechalenge.data.model.ResetPasswordRequestBody
+import com.gsoft.nimblechalenge.data.model.ResetPasswordResponse
 import com.gsoft.nimblechalenge.data.model.TokenRequestBody
 import com.gsoft.nimblechalenge.data.model.TokenResponse
+import com.gsoft.nimblechalenge.data.model.User
 import com.gsoft.nimblechalenge.data.repository.AuthRepository
 import com.gsoft.nimblechalenge.util.Constants
 import com.gsoft.nimblechalenge.util.Constants.KEY_EMAIL
@@ -89,7 +93,34 @@ class AuthRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun passwordReset(email: String): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun passwordReset(email: String): ResetPasswordResponse {
+        return try {
+            val response: ResetPasswordResponse
+            val resetBody = ResetPasswordRequestBody(
+                user = User(email = email)
+            )
+            val result = authApi.resetPassword(resetBody).body()
+            response = when (result?.meta != null){
+                true -> {
+                    ResetPasswordResponse(
+                        meta = result?.meta,
+                    )
+                }
+
+                false -> {
+                    ResetPasswordResponse(
+                        errors = result?.errors
+                    )
+                }
+            }
+
+            response
+
+        }catch (e: Exception){
+            ResetPasswordResponse(
+                meta = null,
+                errors = null
+            )
+        }
     }
 }

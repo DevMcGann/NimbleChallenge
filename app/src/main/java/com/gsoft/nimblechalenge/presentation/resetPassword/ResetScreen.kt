@@ -1,7 +1,9 @@
-package com.gsoft.nimblechalenge.presentation.login
+package com.gsoft.nimblechalenge.presentation.resetPassword
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,40 +15,66 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.gsoft.nimblechalenge.R
+import com.gsoft.nimblechalenge.domain.services.MyNotificationService
 import com.gsoft.nimblechalenge.ui.sharedComposables.CustomField
 import com.gsoft.nimblechalenge.ui.sharedComposables.FullScreenBackground
 import com.gsoft.nimblechalenge.ui.theme.customFontFamily
 
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun LoginScreen(
-     state: LoginScreenState,
-     login: (email: String, password: String) -> Unit,
-     navController: NavController
+fun ResetScreen(
+    navController: NavController,
+    reset: (email: String) -> Unit,
+    state : ResetPasswordState
 ) {
+
+    val context = LocalContext.current
+
     val username = remember { mutableStateOf("dev.mcgann@gmail.com") }
-    val password = remember { mutableStateOf("123456") }
+
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    val notificationService = MyNotificationService(context = context)
+
+    LaunchedEffect(key1 = true) {
+        if (!postNotificationPermission.status.isGranted) {
+            postNotificationPermission.launchPermissionRequest()
+        }
+    }
 
     FullScreenBackground(
         backgroundImage = painterResource(id = R.drawable.overlay)
     ) {
 
+        if(state.showNotification){
+            notificationService.showBasicNotification()
+        }
+
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ) {
-            val (logo, email, pass, loginButton, loading, error, forgot) = createRefs()
+            val (logo, email, loginButton, loading, error, text) = createRefs()
 
             if (state.isLoading){
                 CircularProgressIndicator(
@@ -74,6 +102,18 @@ fun LoginScreen(
                         }
                 )
 
+                Text("Enter your email to receive instructions for resetting your password. ",
+                    fontFamily = customFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(text) {
+                    top.linkTo(logo.bottom, margin = 20.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                })
+
                 CustomField(
                     modifier = Modifier
                         .constrainAs(email) {
@@ -84,22 +124,13 @@ fun LoginScreen(
                     textState = username
                 )
 
-                CustomField(
-                    modifier = Modifier
-                        .constrainAs(pass) {
-                            top.linkTo(email.bottom, margin = 20.dp)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    textState = password
-                )
 
                 Button(
-                    onClick = {login(username.value, password.value) },
+                    onClick = {reset(username.value) },
                     modifier = Modifier
                         .fillMaxWidth(.9f)
                         .constrainAs(loginButton) {
-                            top.linkTo(pass.bottom, margin = 20.dp)
+                            top.linkTo(email.bottom, margin = 20.dp)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -109,70 +140,41 @@ fun LoginScreen(
                         containerColor = Color.White
                     )
                 ) {
-                    Text("Log in", color = Color.Black, fontSize = 17.sp, fontFamily = customFontFamily, fontWeight = FontWeight.Bold)
+                    Text("Reset", color = Color.Black, fontSize = 17.sp, fontFamily = customFontFamily, fontWeight = FontWeight.Bold)
                 }
 
-                Text(text = "Forgot password?", color = Color.White, fontSize = 13.sp, fontFamily = customFontFamily, fontWeight = FontWeight.Bold,
-                    modifier = Modifier.constrainAs(forgot){
-                    top.linkTo(loginButton.bottom, margin = 60.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                        .clickable { navController.navigate("resetPassword") })
 
                 if(state.isError){
-                    Text(
-                        text = state.message,
-                        color = Color.Red,
-                        fontFamily = customFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp,
-                        modifier = Modifier.constrainAs(error){
-                            top.linkTo(loginButton.bottom, margin = 20.dp)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                    )
+                    state.error?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontFamily = customFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            modifier = Modifier.constrainAs(error) {
+                                top.linkTo(loginButton.bottom, margin = 20.dp)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                        )
+                    }
                 }//error
 
             }
         }
     }
 
-    if (state.isAuth){
+    if (state.goToLogin){
         navController.navigate("home") {
             popUpTo("home") { inclusive = true }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        state = LoginScreenState(),
-        login = {email, password ->  {}},
-        navController = rememberNavController()
-    )
+fun ResetScreenPreview() {
+    ResetScreen(navController = rememberNavController(), reset = {}, state = ResetPasswordState())
 }
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenLoadingPreview() {
-    LoginScreen(
-        state = LoginScreenState(isLoading = true),
-        login = {email, password ->  {}},
-        navController = rememberNavController()
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenErrorPreview() {
-    LoginScreen(
-        state = LoginScreenState(isError = true, message = "Incorrect credentials"),
-        login = {email, password ->  {}},
-        navController = rememberNavController()
-    )
-}
-
