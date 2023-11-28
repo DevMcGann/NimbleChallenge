@@ -23,6 +23,8 @@ import com.gsoft.nimblechalenge.presentation.home.HomeViewModel
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
 import com.gsoft.nimblechalenge.presentation.noConnection.NoConnectionScreen
+import com.gsoft.nimblechalenge.presentation.resetPassword.ResetScreen
+import com.gsoft.nimblechalenge.presentation.resetPassword.ResetViewModel
 import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
 import com.gsoft.nimblechalenge.presentation.splash.SplashViewModel
 import com.gsoft.nimblechalenge.ui.theme.NimbleChalengeTheme
@@ -47,6 +49,9 @@ class MainActivity : ComponentActivity() {
 
             val homeViewModel = hiltViewModel<HomeViewModel>()
             val homeState = homeViewModel.state
+
+            val resetViewModel = hiltViewModel<ResetViewModel>()
+            val resetState = resetViewModel.state
 
             NimbleChalengeTheme {
                 Surface(
@@ -73,6 +78,15 @@ class MainActivity : ComponentActivity() {
                                 state = loginState.value,
                                 login = loginViewModel::login,
                                 navController = navController
+                            )
+                            BackHandler(false){}
+                        }
+
+                        composable("resetPassword") {
+                            ResetScreen(
+                                navController = navController,
+                                reset = resetViewModel::resetPassword,
+                                state = resetState.value
                             )
                             BackHandler(false){}
                         }
