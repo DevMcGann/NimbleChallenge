@@ -35,6 +35,9 @@ interface SurveyDao {
     @Query("SELECT * FROM survey WHERE Id = :id LIMIT 1")
     fun getById(id: String): SurveyAttributesDB?
 
+    @Query("DELETE FROM survey")
+    fun clearSurveys()
+
     @Query("""
         SELECT * FROM survey
         """)
