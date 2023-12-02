@@ -1,9 +1,11 @@
 package com.gsoft.nimblechalenge
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +24,9 @@ import com.gsoft.nimblechalenge.presentation.home.HomeScreen
 import com.gsoft.nimblechalenge.presentation.home.HomeViewModel
 import com.gsoft.nimblechalenge.presentation.login.LoginScreen
 import com.gsoft.nimblechalenge.presentation.login.LoginViewModel
+import com.gsoft.nimblechalenge.presentation.noConnection.NoConnectionScreen
+import com.gsoft.nimblechalenge.presentation.resetPassword.ResetScreen
+import com.gsoft.nimblechalenge.presentation.resetPassword.ResetViewModel
 import com.gsoft.nimblechalenge.presentation.splash.SplashScreen
 import com.gsoft.nimblechalenge.presentation.splash.SplashViewModel
 import com.gsoft.nimblechalenge.ui.theme.NimbleChalengeTheme
@@ -30,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -47,6 +53,9 @@ class MainActivity : ComponentActivity() {
             val homeViewModel = hiltViewModel<HomeViewModel>()
             val homeState = homeViewModel.state
 
+            val resetViewModel = hiltViewModel<ResetViewModel>()
+            val resetState = resetViewModel.state
+
             NimbleChalengeTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -62,6 +71,11 @@ class MainActivity : ComponentActivity() {
                             BackHandler(false){}
                         }
 
+                        composable("noConnection") {
+                            NoConnectionScreen()
+                            BackHandler(false){}
+                        }
+
                         composable("login") {
                             LoginScreen(
                                 state = loginState.value,
@@ -71,12 +85,22 @@ class MainActivity : ComponentActivity() {
                             BackHandler(false){}
                         }
 
+                        composable("resetPassword") {
+                            ResetScreen(
+                                navController = navController,
+                                reset = resetViewModel::resetPassword,
+                                state = resetState.value
+                            )
+                            BackHandler(false){}
+                        }
+
                         composable("home") {
                             HomeScreen(
                                 navController = navController,
                                 state = homeState.value,
                                 getSurvey = homeViewModel::getSurveys,
-                                getDate = homeViewModel::getCurrentDateFormattedString
+                                getDate = homeViewModel::getCurrentDateFormattedString,
+                                nextPage = homeViewModel::increasePage
                             )
                             BackHandler(false){}
                         }

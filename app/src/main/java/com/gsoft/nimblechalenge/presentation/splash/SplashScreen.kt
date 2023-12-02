@@ -50,6 +50,12 @@ fun SplashScreen(
             popUpTo("home") { inclusive = true }
         }
     }
+
+    if(state.goToNoConn){
+        navController.navigate("noConnection") {
+            popUpTo("noConnection") { inclusive = true }
+        }
+    }
 }
 
 @Preview(showBackground = true)

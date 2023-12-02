@@ -9,6 +9,7 @@ import com.gsoft.nimblechalenge.domain.usecases.surveyUsecases.GetSurveys
 import com.gsoft.nimblechalenge.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -26,7 +27,7 @@ class HomeViewModel @Inject constructor(
     fun getSurveys(){
         viewModelScope.launch(Dispatchers.IO) {
             setLoadingState()
-            //delay(2000)
+            delay(2000)
             try{
                 when (val response = getSurveys.invoke(state.value.currentPage)){
                      Resource.success(response.data) -> {
@@ -74,6 +75,11 @@ class HomeViewModel @Inject constructor(
         _state.value = _state.value.copy(isError = true)
         _state.value = _state.value.copy(errorMessage = message)
         _state.value = _state.value.copy(surveys = emptyList())
+    }
+
+    fun increasePage(){
+        _state.value = _state.value.copy(currentPage = _state.value.currentPage + 1)
+        getSurveys()
     }
 
 

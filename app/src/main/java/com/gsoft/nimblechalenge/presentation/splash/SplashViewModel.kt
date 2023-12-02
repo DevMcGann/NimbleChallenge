@@ -9,6 +9,7 @@ import com.gsoft.nimblechalenge.domain.usecases.authUsecases.IsLoggedInUseCase
 import com.gsoft.nimblechalenge.domain.usecases.authUsecases.LogoutUseCase
 import com.gsoft.nimblechalenge.domain.usecases.authUsecases.RefreshTokenUseCase
 import com.gsoft.nimblechalenge.presentation.login.LoginScreenState
+import com.gsoft.nimblechalenge.util.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val refreshTokenUseCase: RefreshTokenUseCase,
-    private val isLoggedInUseCase: IsLoggedInUseCase
+    private val isLoggedInUseCase: IsLoggedInUseCase,
+    private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
     private val _state = mutableStateOf(SplashState())
@@ -30,12 +32,20 @@ class SplashViewModel @Inject constructor(
       fun isLogged(){
          viewModelScope.launch {
              val isLogged = isLoggedInUseCase.invoke()
-             if (isLogged){
-                 _state.value = _state.value.copy(goToHome = true)
-             }else{
+             if (networkUtils.isNetworkConnected()){
                  _state.value = _state.value.copy(goToHome = false)
                  refreshToken()
+             }else{
+                 if (isLogged){
+                     _state.value = _state.value.copy(goToHome = true)
+                 }else{
+                     _state.value = _state.value.copy(goToHome = false)
+                     _state.value = _state.value.copy(goToLogin = false)
+                     _state.value = _state.value.copy(goToNoConn = true)
+
+                 }
              }
+
          }
     }
 
