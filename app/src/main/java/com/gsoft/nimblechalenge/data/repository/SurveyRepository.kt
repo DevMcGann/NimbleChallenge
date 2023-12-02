@@ -13,6 +13,8 @@ interface SurveyRepository {
 
     suspend fun getSurveys(page:Int): Resource<List<Survey?>>
 
+    suspend fun clearSurveys()
+
     suspend fun saveSurvey(surveyAttributes: SurveyAttributes, id:String)
 
 }

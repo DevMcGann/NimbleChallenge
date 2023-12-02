@@ -28,6 +28,7 @@ class SurveyRepositoryImpl @Inject constructor(
     override suspend fun getSurveys(page: Int): Resource<List<Survey?>> {
        return  try {
             if (networkUtils.isNetworkConnected()){
+                clearSurveys()
                 getSurveysFromApi(page)
             }else{
                 getSurveysOffline()
@@ -35,6 +36,10 @@ class SurveyRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Resource.error(message = e.message.toString(), data = null)
         }
+    }
+
+    override suspend fun clearSurveys() {
+       surveyDao.clearSurveys()
     }
 
     private suspend fun getSurveysFromApi(page:Int):Resource<List<Survey?>>{
